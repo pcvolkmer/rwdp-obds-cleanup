@@ -2,8 +2,12 @@ FROM golang:1.22-alpine AS build-env
 
 WORKDIR /tmp/build
 ADD . /tmp/build
+
+RUN apk update && \
+    apk add gcc musl-dev librdkafka librdkafka-dev
+
 # -ldlflags '-s' to strip binary
-RUN CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -o app -ldflags '-w -s'
+RUN CGO_ENABLED=1 GOOS=linux GOARCH=amd64 go build -tags musl -o app --ldflags '-s -w -linkmode external -extldflags "-static"'
 
 ###
 
