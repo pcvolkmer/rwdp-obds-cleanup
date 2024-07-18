@@ -15,9 +15,9 @@ var (
 )
 
 type CLI struct {
-	bootstrapServers string `env:"BOOTSTRAP_SERVERS" help:"Kafka bootstrap servers" required:""`
-	inputTopics      string `env:"INPUT_TOPICS" help:"Kafka input topic(s)" required:""`
-	outputTopic      string `env:"OUTPUT_TOPIC" help:"Kafka output topic" required:""`
+	BootstrapServers string `env:"BOOTSTRAP_SERVERS" help:"Kafka bootstrap servers" required:""`
+	InputTopics      string `env:"INPUT_TOPICS" help:"Kafka input topic(s)" required:""`
+	OutputTopic      string `env:"OUTPUT_TOPIC" help:"Kafka output topic" required:""`
 }
 
 func initCLI() {
@@ -37,7 +37,7 @@ func main() {
 	initCLI()
 
 	consumer, err := kafka.NewConsumer(&kafka.ConfigMap{
-		"bootstrap.servers": cli.bootstrapServers,
+		"bootstrap.servers": cli.BootstrapServers,
 		"group.id":          "rwdp-obds-cleanup",
 		"auto.offset.reset": "smallest",
 	})
@@ -46,14 +46,14 @@ func main() {
 	}
 
 	producer, err := kafka.NewProducer(&kafka.ConfigMap{
-		"bootstrap.servers": cli.bootstrapServers,
+		"bootstrap.servers": cli.BootstrapServers,
 	})
 	if err != nil {
 		log.Fatalf("Kafka Producer not available: %v", err)
 	}
 
-	inputTopics := strings.Split(cli.inputTopics, ",")
-	outputTopic := cli.outputTopic
+	inputTopics := strings.Split(cli.InputTopics, ",")
+	outputTopic := cli.OutputTopic
 
 	err = consumer.SubscribeTopics(inputTopics, nil)
 
@@ -75,7 +75,6 @@ func main() {
 			_, _ = fmt.Fprintf(os.Stderr, "%% Error: %v\n", e)
 			run = false
 		default:
-			fmt.Printf("Ignored %v\n", e)
 		}
 	}
 
