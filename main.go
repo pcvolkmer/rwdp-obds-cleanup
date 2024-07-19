@@ -56,6 +56,8 @@ func main() {
 
 	initCLI()
 
+	log.Printf("Trying to connect to bootstrap servers: %s\n", cli.BootstrapServers)
+
 	consumer, err := kafka.NewConsumer(&kafka.ConfigMap{
 		"bootstrap.servers": cli.BootstrapServers,
 		"group.id":          "rwdp-obds-cleanup",
