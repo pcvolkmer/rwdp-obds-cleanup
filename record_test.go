@@ -37,6 +37,7 @@ func TestShouldDeserializeJson(t *testing.T) {
 
 	if err != nil {
 		t.Errorf("Cannot deserialize record")
+		return
 	}
 
 	if !strings.HasPrefix(record.Payload.XmlDaten, "<?xml") {
@@ -96,6 +97,7 @@ func TestShouldDetectAdtGekidSchemaVersion2x(t *testing.T) {
 	record, err := ParseRecordValue(testRecord)
 	if err != nil {
 		t.Errorf("Cannot deserialize record")
+		return
 	}
 
 	if !record.IsObdsVersion2x() {
