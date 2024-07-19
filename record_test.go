@@ -91,3 +91,14 @@ func TestShouldNotModifyRecordWithoutLeadingZeros(t *testing.T) {
 		t.Errorf("Fixed Json does not match expected record")
 	}
 }
+
+func TestShouldDetectAdtGekidSchemaVersion2x(t *testing.T) {
+	record, err := ParseRecordValue(testRecord)
+	if err != nil {
+		t.Errorf("Cannot deserialize record")
+	}
+
+	if !record.IsObdsVersion2x() {
+		t.Errorf("Record not detected as ADT GEKID 2.x")
+	}
+}

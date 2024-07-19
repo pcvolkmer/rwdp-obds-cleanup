@@ -37,6 +37,7 @@ type CLI struct {
 	OutputTopic      string `env:"OUTPUT_TOPIC" help:"Kafka output topic" required:""`
 	// Features
 	EnableRemovePatientIdZeros bool `env:"ENABLE_REMOVE_PATIENT_ID_ZERO" help:"Feature: Remove leading patient id zeros" default:"true"`
+	EnableDropNonObds2         bool `env:"ENABLE_DROP_NON_OBDS_2" help:"Feature: Drop records not containing oBDS 2.x message"`
 }
 
 func initCLI() {
@@ -89,6 +90,11 @@ func main() {
 
 			// Manipulate message value
 			if recordValue, err := ParseRecordValue(e.Value); err == nil {
+
+				if cli.EnableDropNonObds2 && !recordValue.IsObdsVersion2x() {
+					log.Printf("Dropping non oBDS 2.x record - Key: %v\n", string(e.Key))
+					continue
+				}
 
 				if cli.EnableRemovePatientIdZeros {
 					recordValue.RemoveLeadingZerosFromPatientIds()

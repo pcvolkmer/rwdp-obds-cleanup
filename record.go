@@ -54,6 +54,12 @@ func (record *RecordValue) RemoveLeadingZerosFromPatientIds() {
 	}
 }
 
+func (record *RecordValue) IsObdsVersion2x() bool {
+	schemaVersionRegEx := regexp.MustCompile(`<ADT_GEKID.*Schema_Version="2\.[0-2]\.[0-3]"`)
+
+	return schemaVersionRegEx.MatchString(record.Payload.XmlDaten)
+}
+
 func (record *RecordValue) ToJson() ([]byte, error) {
 	buffer := &bytes.Buffer{}
 	encoder := json.NewEncoder(buffer)
