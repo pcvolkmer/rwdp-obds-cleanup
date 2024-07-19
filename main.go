@@ -20,11 +20,9 @@
 package main
 
 import (
-	"fmt"
 	"github.com/alecthomas/kong"
 	"github.com/confluentinc/confluent-kafka-go/kafka"
 	"log"
-	"os"
 	"strings"
 )
 
@@ -63,15 +61,17 @@ func main() {
 		"auto.offset.reset": "smallest",
 	})
 	if err != nil {
-		log.Fatalf("Kafka consumer available: %v", err)
+		log.Fatalf("Kafka consumer not available: %v", err)
 	}
+	log.Println("Kafka consumer is ready")
 
 	producer, err := kafka.NewProducer(&kafka.ConfigMap{
 		"bootstrap.servers": cli.BootstrapServers,
 	})
 	if err != nil {
-		log.Fatalf("Kafka Producer not available: %v", err)
+		log.Fatalf("Kafka producer not available: %v", err)
 	}
+	log.Println("Kafka producer is ready")
 
 	inputTopics := strings.Split(cli.InputTopics, ",")
 	outputTopic := cli.OutputTopic
@@ -101,11 +101,16 @@ func main() {
 			}
 
 			// Send message
-			_ = producer.Produce(e, nil)
+			if err = producer.Produce(e, nil); err == nil {
+				log.Printf("Record processed - Key: %v\n", string(e.Key))
+			} else {
+				log.Fatalf("Kafka producer failed: %v", err)
+			}
 		case kafka.Error:
-			_, _ = fmt.Fprintf(os.Stderr, "%% Error: %v\n", e)
+			log.Printf("Error: %v\n", e)
 			run = false
 		default:
+			// Nop
 		}
 	}
 
