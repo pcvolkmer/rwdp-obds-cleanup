@@ -37,6 +37,8 @@ type CLI struct {
 	BootstrapServers string `env:"BOOTSTRAP_SERVERS" help:"Kafka bootstrap servers" required:""`
 	InputTopics      string `env:"INPUT_TOPICS" help:"Kafka input topic(s)" required:""`
 	OutputTopic      string `env:"OUTPUT_TOPIC" help:"Kafka output topic" required:""`
+	// Features
+	EnableRemovePatientIdZeros bool `env:"ENABLE_REMOVE_PATIENT_ID_ZERO" help:"Feature: Remove leading patient id zeros" default:"true"`
 }
 
 func initCLI() {
@@ -87,7 +89,11 @@ func main() {
 
 			// Manipulate message value
 			if recordValue, err := ParseRecordValue(e.Value); err == nil {
-				recordValue.RemoveLeadingZerosFromPatientIds()
+
+				if cli.EnableRemovePatientIdZeros {
+					recordValue.RemoveLeadingZerosFromPatientIds()
+				}
+
 				fixedRecordValue, err := recordValue.ToJson()
 				if err == nil {
 					e.Value = fixedRecordValue

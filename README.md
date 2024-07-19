@@ -13,3 +13,9 @@ See [docker-compose.yml](docker-compose/docker-compose.yml) for an example on ho
 [here](https://github.com/pcvolkmer/rwdp-obds-cleanup/pkgs/container/rwdp-obds-cleanup).
 
 Change `BOOTSTRAP_SERVERS`, `INPUT_TOPICS` or `OUTPUT_TOPIC` to apply any configuration changes.
+
+### Enable or disable features
+
+To enable or disable a feature, set the given env var to `true` or `false`. All features are enabled by default.
+
+* `ENABLE_REMOVE_PATIENT_ID_ZERO`: Enable removing of leading patient id zeros
